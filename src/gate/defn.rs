@@ -1,5 +1,6 @@
 
 use crate::config::{QubitIdx, Real};
+use crate::gate::BranchingType;
 
 #[derive(Debug, Clone)]
 pub enum GateDefn {
@@ -153,4 +154,33 @@ impl GateDefn {
             _ => vec![self.clone()],
         }
     }
+
+    pub fn branching_type(&self) -> BranchingType {
+        match self {
+            GateDefn::CCX { .. }
+            | GateDefn::CPhase { .. }
+            | GateDefn::CSwap { .. }
+            | GateDefn::CX { .. }
+            | GateDefn::CZ { .. }
+            | GateDefn::PauliY(_)
+            | GateDefn::PauliZ(_)
+            | GateDefn::Phase { .. }
+            | GateDefn::RZ { .. }
+            | GateDefn::S(_)
+            | GateDefn::Sdg(_)
+            | GateDefn::Swap { .. }
+            | GateDefn::T(_)
+            | GateDefn::Tdg(_)
+            | GateDefn::X(_) => BranchingType::Nonbranching,
+            GateDefn::Hadamard(_)
+            | GateDefn::RY { .. }
+            | GateDefn::SqrtX(_)
+            | GateDefn::SqrtXdg(_) => BranchingType::Branching,
+            GateDefn::FSim { .. } | GateDefn::RX { .. } | GateDefn::U { .. } => {
+                BranchingType::MaybeBranching
+            }
+            GateDefn::Other { .. } => unimplemented!(),
+        }
+    }
+
 }

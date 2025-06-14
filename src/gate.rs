@@ -1,8 +1,15 @@
-mod unitary;
-mod defn;
+pub mod unitary;
+pub mod defn;
 
 use crate::config::{QubitIdx};
 use defn::GateDefn;
+
+#[derive(Debug, Eq, PartialEq)]
+enum BranchingType {
+    Nonbranching,
+    Branching,
+    MaybeBranching,
+}
 
 
 #[derive(Debug)]
@@ -56,4 +63,10 @@ impl Gate {
         let touches = create_touches(&defn);
         Self { defn, touches }
     }
+
+    pub fn is_branching(&self) -> bool {
+        self.defn.branching_type() != BranchingType::Nonbranching
+        // NOTE: We assume MaybeBranching as Branching
+    }
+
 }
